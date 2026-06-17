@@ -16,38 +16,25 @@ final class TimerControllerTests: XCTestCase {
         XCTAssertEqual(TimerSettings.durationSeconds(minutes: 999, seconds: 0, range: 1...3600), 3600)
     }
 
-    func testWorkTimerReachesZeroAndWaitsForBreakChoice() {
+    func testWorkTimerReachesZeroAndStartsBreak() {
         let controller = TimerController(settings: TimerSettings(workSeconds: 2, breakSeconds: 300))
 
         controller.startWork()
         controller.tick()
         controller.tick()
 
-        XCTAssertEqual(controller.phase, .breakPending)
-        XCTAssertEqual(controller.remainingSeconds, 0)
+        XCTAssertEqual(controller.phase, .breakActive)
+        XCTAssertEqual(controller.remainingSeconds, 300)
     }
 
-    func testAddExtraWorkTimeDelaysBreak() {
+    func testAddExtraWorkTimeDelaysActiveBreak() {
         let controller = TimerController(settings: TimerSettings(workSeconds: 2, breakSeconds: 300))
 
-        controller.startWork()
-        controller.tick()
-        controller.tick()
+        controller.startBreak()
         controller.addExtraWorkTime(seconds: 300)
 
         XCTAssertEqual(controller.phase, .working)
         XCTAssertEqual(controller.remainingSeconds, 300)
-    }
-
-    func testStartBreakFromPendingStartsBreakTimer() {
-        let controller = TimerController(settings: TimerSettings(workSeconds: 1, breakSeconds: 120))
-
-        controller.startWork()
-        controller.tick()
-        controller.startBreak()
-
-        XCTAssertEqual(controller.phase, .breakActive)
-        XCTAssertEqual(controller.remainingSeconds, 120)
     }
 
     func testBreakTimerEndsWithoutAutoRestart() {

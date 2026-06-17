@@ -67,20 +67,13 @@ struct ContentView: View {
             Toggle("Auto restart work", isOn: $autoRestartWork)
 
             HStack {
-                if controller.phase == .breakPending {
-                    Button("Start Break") { startBreak() }
-                        .keyboardShortcut(.defaultAction)
+                Button("Start") { startWork() }
+                    .keyboardShortcut(.defaultAction)
 
-                    Button("+5 min") { addExtraWorkTime() }
-                } else {
-                    Button("Start") { startWork() }
-                        .keyboardShortcut(.defaultAction)
+                Button(isPaused ? "Resume" : "Pause") { togglePause() }
+                    .disabled(controller.phase == .idle)
 
-                    Button(isPaused ? "Resume" : "Pause") { togglePause() }
-                        .disabled(controller.phase == .idle)
-
-                    Button("Reset") { reset() }
-                }
+                Button("Reset") { reset() }
             }
 
             Button("Change GIF") {
@@ -118,8 +111,6 @@ struct ContentView: View {
             return "Ready when you are."
         case .working:
             return "Work time."
-        case .breakPending:
-            return "Break ready."
         case .breakActive:
             return "Cat says break."
         case .paused:
@@ -131,12 +122,6 @@ struct ContentView: View {
         syncSettings()
         controller.startWork()
         overlay.close()
-    }
-
-    private func startBreak() {
-        syncSettings()
-        controller.startBreak()
-        updateOverlay()
     }
 
     private func addExtraWorkTime() {

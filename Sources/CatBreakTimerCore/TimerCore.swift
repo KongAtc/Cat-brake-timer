@@ -25,7 +25,6 @@ public indirect enum TimerPhase: Equatable {
     case idle
     case working
     case paused(TimerPhase)
-    case breakPending
     case breakActive
 }
 
@@ -65,7 +64,7 @@ public final class TimerController: ObservableObject {
         switch phase {
         case .working, .breakActive:
             phase = .paused(phase)
-        case .idle, .breakPending, .paused:
+        case .idle, .paused:
             break
         }
     }
@@ -98,10 +97,10 @@ public final class TimerController: ObservableObject {
 
         switch phase {
         case .working:
-            phase = .breakPending
+            startBreak()
         case .breakActive:
             dismissBreak()
-        case .idle, .breakPending, .paused:
+        case .idle, .paused:
             break
         }
     }

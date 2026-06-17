@@ -10,7 +10,7 @@ Work and break durations are stored as total seconds in `@AppStorage` keys `work
 
 ## Extra Time Before Break
 
-When work time reaches zero, the timer enters a pending-break state. Use `Start Break` to begin the break or `+5 min` to delay it and continue working.
+When work time reaches zero, the break overlay starts immediately. Use `+5 min` on the overlay to close it and continue working.
 
 ## Custom GIF
 
