@@ -2,14 +2,18 @@ import Combine
 import Foundation
 
 public struct TimerSettings: Equatable {
-    public var workMinutes: Int
-    public var breakMinutes: Int
+    public var workSeconds: Int
+    public var breakSeconds: Int
     public var autoRestartWork: Bool
 
-    public init(workMinutes: Int = 25, breakMinutes: Int = 5, autoRestartWork: Bool = false) {
-        self.workMinutes = Self.clamp(workMinutes, 1...480)
-        self.breakMinutes = Self.clamp(breakMinutes, 1...60)
+    public init(workSeconds: Int = 1500, breakSeconds: Int = 300, autoRestartWork: Bool = false) {
+        self.workSeconds = Self.clamp(workSeconds, 1...28800)
+        self.breakSeconds = Self.clamp(breakSeconds, 1...3600)
         self.autoRestartWork = autoRestartWork
+    }
+
+    public static func durationSeconds(minutes: Int, seconds: Int, range: ClosedRange<Int>) -> Int {
+        clamp(minutes * 60 + clamp(seconds, 0...59), range)
     }
 
     private static func clamp(_ value: Int, _ range: ClosedRange<Int>) -> Int {
@@ -21,6 +25,7 @@ public indirect enum TimerPhase: Equatable {
     case idle
     case working
     case paused(TimerPhase)
+    case breakPending
     case breakActive
 }
 
@@ -43,19 +48,24 @@ public final class TimerController: ObservableObject {
 
     public func startWork(seconds: Int? = nil) {
         phase = .working
-        remainingSeconds = seconds ?? settings.workMinutes * 60
+        remainingSeconds = seconds ?? settings.workSeconds
     }
 
     public func startBreak(seconds: Int? = nil) {
         phase = .breakActive
-        remainingSeconds = seconds ?? settings.breakMinutes * 60
+        remainingSeconds = seconds ?? settings.breakSeconds
+    }
+
+    public func addExtraWorkTime(seconds: Int = 300) {
+        phase = .working
+        remainingSeconds = max(1, seconds)
     }
 
     public func pause() {
         switch phase {
         case .working, .breakActive:
             phase = .paused(phase)
-        case .idle, .paused:
+        case .idle, .breakPending, .paused:
             break
         }
     }
@@ -88,10 +98,10 @@ public final class TimerController: ObservableObject {
 
         switch phase {
         case .working:
-            startBreak()
+            phase = .breakPending
         case .breakActive:
             dismissBreak()
-        case .idle, .paused:
+        case .idle, .breakPending, .paused:
             break
         }
     }

@@ -5,11 +5,18 @@ import SwiftUI
 final class OverlayWindowController {
     private var window: NSWindow?
     private var dismiss: (@MainActor () -> Void)?
+    private var addExtraTime: (@MainActor () -> Void)?
 
-    func show(seconds: Int, onDismiss: @escaping @MainActor () -> Void) {
+    func show(
+        seconds: Int,
+        gifURL: URL?,
+        onDismiss: @escaping @MainActor () -> Void,
+        onAddExtraTime: @escaping @MainActor () -> Void
+    ) {
         dismiss = onDismiss
+        addExtraTime = onAddExtraTime
         if let window {
-            (window.contentView as? NSHostingView<OverlayView>)?.rootView = view(seconds: seconds)
+            (window.contentView as? NSHostingView<OverlayView>)?.rootView = view(seconds: seconds, gifURL: gifURL)
             return
         }
 
@@ -22,9 +29,9 @@ final class OverlayWindowController {
         )
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         window.isReleasedWhenClosed = false
-        window.level = .screenSaver
+        window.level = .floating
         window.backgroundColor = .black
-        window.contentView = NSHostingView(rootView: view(seconds: seconds))
+        window.contentView = NSHostingView(rootView: view(seconds: seconds, gifURL: gifURL))
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         self.window = window
@@ -35,23 +42,28 @@ final class OverlayWindowController {
         window = nil
     }
 
-    private func view(seconds: Int) -> OverlayView {
-        OverlayView(seconds: seconds) { [weak self] in
+    private func view(seconds: Int, gifURL: URL?) -> OverlayView {
+        OverlayView(seconds: seconds, gifURL: gifURL) { [weak self] in
             self?.close()
             self?.dismiss?()
+        } onAddExtraTime: { [weak self] in
+            self?.close()
+            self?.addExtraTime?()
         }
     }
 }
 
 struct OverlayView: View {
     let seconds: Int
+    let gifURL: URL?
     let onDismiss: @MainActor () -> Void
+    let onAddExtraTime: @MainActor () -> Void
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             VStack(spacing: 28) {
-                AnimatedGIFView(resource: "cat", extension: "gif")
+                AnimatedGIFView(fileURL: gifURL)
                     .frame(width: 420, height: 420)
 
                 Text("Break time")
@@ -63,10 +75,13 @@ struct OverlayView: View {
                     .monospacedDigit()
                     .foregroundStyle(.white)
 
-                Button("Shoo", action: onDismiss)
-                    .font(.title2.bold())
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
+                HStack(spacing: 14) {
+                    Button("Shoo", action: onDismiss)
+                    Button("+5 min", action: onAddExtraTime)
+                }
+                .font(.title2.bold())
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
             }
             .padding(40)
         }
@@ -78,17 +93,27 @@ struct OverlayView: View {
 }
 
 struct AnimatedGIFView: NSViewRepresentable {
-    let resource: String
-    let `extension`: String
+    let fileURL: URL?
 
     func makeNSView(context: Context) -> NSImageView {
         let imageView = NSImageView()
         imageView.imageScaling = .scaleProportionallyUpOrDown
         imageView.canDrawSubviewsIntoLayer = true
         imageView.animates = true
-        imageView.image = Bundle.module.url(forResource: resource, withExtension: `extension`).flatMap(NSImage.init(contentsOf:))
+        imageView.image = image()
         return imageView
     }
 
     func updateNSView(_ nsView: NSImageView, context: Context) {}
+
+    private func image() -> NSImage? {
+        if let fileURL,
+           FileManager.default.fileExists(atPath: fileURL.path),
+           let image = NSImage(contentsOf: fileURL) {
+            return image
+        }
+
+        return Bundle.module.url(forResource: "cat", withExtension: "gif")
+            .flatMap(NSImage.init(contentsOf:))
+    }
 }

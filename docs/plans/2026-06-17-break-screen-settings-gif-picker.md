@@ -24,7 +24,7 @@
 - Modify: `Sources/CatBreakTimerCore/TimerCore.swift`
 - Modify: `Tests/CatBreakTimerCoreTests/TimerControllerTests.swift`
 
-- [ ] **Step 1: Write failing settings tests**
+- [x] **Step 1: Write failing settings tests**
 
 Replace the old `testSettingsClampInvalidValues` with:
 
@@ -38,13 +38,13 @@ func testSettingsClampInvalidSecondValues() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `swift test`
 
 Expected: FAIL because `TimerSettings` does not have `workSeconds` or `breakSeconds`.
 
-- [ ] **Step 3: Update `TimerSettings`**
+- [x] **Step 3: Update `TimerSettings`**
 
 Change `TimerSettings` to:
 
@@ -73,11 +73,11 @@ remainingSeconds = seconds ?? settings.workSeconds
 remainingSeconds = seconds ?? settings.breakSeconds
 ```
 
-- [ ] **Step 4: Update existing tests to seconds**
+- [x] **Step 4: Update existing tests to seconds**
 
 Use `TimerSettings(workSeconds: 60, breakSeconds: 300)` for a 1-minute work and 5-minute break setup. Update auto-restart expectation to `180` by using `TimerSettings(workSeconds: 180, breakSeconds: 60, autoRestartWork: true)`.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `swift test`
 
@@ -89,7 +89,7 @@ Expected: PASS.
 - Modify: `Sources/CatBreakTimerCore/TimerCore.swift`
 - Modify: `Tests/CatBreakTimerCoreTests/TimerControllerTests.swift`
 
-- [ ] **Step 1: Write failing break-delay tests**
+- [x] **Step 1: Write failing break-delay tests**
 
 Add:
 
@@ -129,13 +129,13 @@ func testStartBreakFromPendingStartsBreakTimer() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `swift test`
 
 Expected: FAIL because `.breakPending` and `addExtraWorkTime(seconds:)` do not exist.
 
-- [ ] **Step 3: Implement break pending**
+- [x] **Step 3: Implement break pending**
 
 Add `case breakPending` to `TimerPhase`.
 
@@ -157,11 +157,11 @@ public func addExtraWorkTime(seconds: Int = 300) {
 
 Keep `startBreak()` as the way to move from pending to actual break.
 
-- [ ] **Step 4: Update old transition test**
+- [x] **Step 4: Update old transition test**
 
 Rename `testWorkTimerReachesZeroAndStartsBreak` to `testWorkTimerReachesZeroAndWaitsForBreakChoice`; it should expect `.breakPending`, not `.breakActive`.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `swift test`
 
@@ -172,7 +172,7 @@ Expected: PASS.
 **Files:**
 - Modify: `Sources/CatBreakTimer/CatBreakTimerApp.swift`
 
-- [ ] **Step 1: Replace minute storage**
+- [x] **Step 1: Replace minute storage**
 
 Replace:
 
@@ -188,13 +188,13 @@ with:
 @AppStorage("breakSeconds") private var breakSeconds = 300
 ```
 
-- [ ] **Step 2: Add min/sec bindings**
+- [x] **Step 2: Add min/sec bindings**
 
 Add private bindings or helper methods in `ContentView` so the UI edits `workSeconds` and `breakSeconds` through minute and second fields. Clamp seconds field to `0...59`; clamp total work to `1...28800`; clamp total break to `1...3600`.
 
 Use SwiftUI `TextField(value:format:)` number inputs, following Apple’s current `TextField("Label", value: $value, format: .number)` API.
 
-- [ ] **Step 3: Replace steppers with number fields**
+- [x] **Step 3: Replace steppers with number fields**
 
 Show:
 
@@ -205,7 +205,7 @@ Break: [min] min [sec] sec
 
 Use compact numeric text fields; no custom picker library.
 
-- [ ] **Step 4: Add break-pending controls**
+- [x] **Step 4: Add break-pending controls**
 
 When `controller.phase == .breakPending`, show:
 
@@ -216,11 +216,11 @@ Button("+5 min") { controller.addExtraWorkTime(seconds: 300) }
 
 The `+5 min` button is the required “add extra time before break” behavior.
 
-- [ ] **Step 5: Update settings sync**
+- [x] **Step 5: Update settings sync**
 
 Build `TimerSettings(workSeconds: workSeconds, breakSeconds: breakSeconds, autoRestartWork: autoRestartWork)` and write clamped values back to `@AppStorage`.
 
-- [ ] **Step 6: Build**
+- [x] **Step 6: Build**
 
 Run: `swift build`
 
@@ -232,7 +232,7 @@ Expected: PASS.
 - Modify: `Sources/CatBreakTimer/OverlayWindowController.swift`
 - Modify: `Sources/CatBreakTimer/CatBreakTimerApp.swift`
 
-- [ ] **Step 1: Lower overlay window level**
+- [x] **Step 1: Lower overlay window level**
 
 Change:
 
@@ -248,7 +248,7 @@ window.level = .floating
 
 This keeps the break screen above normal windows but lets system/Slack call alerts appear above it.
 
-- [ ] **Step 2: Add extra-time callback**
+- [x] **Step 2: Add extra-time callback**
 
 Change overlay show API to accept:
 
@@ -261,7 +261,7 @@ func show(
 )
 ```
 
-- [ ] **Step 3: Add overlay `+5 min` button**
+- [x] **Step 3: Add overlay `+5 min` button**
 
 In `OverlayView`, add a second button next to `Shoo`:
 
@@ -271,11 +271,11 @@ Button("+5 min", action: onAddExtraTime)
 
 The callback should close the overlay and call `controller.addExtraWorkTime(seconds: 300)`.
 
-- [ ] **Step 4: Keep manual stop behavior**
+- [x] **Step 4: Keep manual stop behavior**
 
 Keep `Shoo` wired to dismiss the break as today. No Slack detection, no Accessibility permissions, no notification scraping.
 
-- [ ] **Step 5: Build**
+- [x] **Step 5: Build**
 
 Run: `swift build`
 
@@ -287,7 +287,7 @@ Expected: PASS.
 - Modify: `Sources/CatBreakTimer/CatBreakTimerApp.swift`
 - Modify: `Sources/CatBreakTimer/OverlayWindowController.swift`
 
-- [ ] **Step 1: Add GIF path storage**
+- [x] **Step 1: Add GIF path storage**
 
 Add:
 
@@ -296,7 +296,7 @@ Add:
 @State private var isPickingGIF = false
 ```
 
-- [ ] **Step 2: Add Change GIF button**
+- [x] **Step 2: Add Change GIF button**
 
 Add:
 
@@ -308,7 +308,7 @@ Button("Change GIF") {
 
 Attach `.fileImporter(isPresented:allowedContentTypes:allowsMultipleSelection:onCompletion:)` with GIF/image content types. Use `UTType.gif` and `.image`; import `UniformTypeIdentifiers`.
 
-- [ ] **Step 3: Copy selected GIF**
+- [x] **Step 3: Copy selected GIF**
 
 On successful selection, copy the chosen file to:
 
@@ -318,11 +318,11 @@ Application Support/CatBreakTimer/custom.gif
 
 Create the directory if missing. Replace the old `custom.gif` if present.
 
-- [ ] **Step 4: Store copied path**
+- [x] **Step 4: Store copied path**
 
 Set `customGIFPath` to the copied file path. Never store the original selected path as the runtime source.
 
-- [ ] **Step 5: Display selected GIF**
+- [x] **Step 5: Display selected GIF**
 
 Change `AnimatedGIFView` to support either:
 
@@ -332,7 +332,7 @@ let fileURL: URL?
 
 If `fileURL` exists and loads, display it. Otherwise load bundled `cat.gif` from `Bundle.module`.
 
-- [ ] **Step 6: Build**
+- [x] **Step 6: Build**
 
 Run: `swift build`
 
@@ -343,7 +343,7 @@ Expected: PASS.
 **Files:**
 - Create: `NOTES.md`
 
-- [ ] **Step 1: Add notes**
+- [x] **Step 1: Add notes**
 
 Create:
 
@@ -367,13 +367,13 @@ When work time reaches zero, the timer enters a pending-break state. Use `Start 
 The Change GIF button copies the selected GIF into Application Support as `custom.gif`. If that file is missing or unreadable, the app falls back to the bundled `cat.gif`.
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `swift test`
 
 Expected: PASS.
 
-- [ ] **Step 3: Run build**
+- [x] **Step 3: Run build**
 
 Run: `swift build`
 
