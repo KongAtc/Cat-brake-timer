@@ -18,6 +18,7 @@ SwiftPM/Xcode may need normal user cache access outside the workspace.
 - `Sources/CatBreakTimer`: SwiftUI app and AppKit overlay window.
 - `Sources/CatBreakTimer/Resources/cat.gif`: bundled break-screen GIF.
 - `Tests/CatBreakTimerCoreTests`: unit tests for timer behavior.
+- `.agents/`: reusable project sub-agent instructions; check `.agents/README.md` when asked about agents or subagents.
 
 ## Rules
 
