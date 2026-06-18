@@ -15,6 +15,7 @@ mkdir -p "$CONTENTS/MacOS" "$CONTENTS/Resources"
 cp "$BUILD_DIR/CatBreakTimer" "$CONTENTS/MacOS/CatBreakTimer"
 chmod +x "$CONTENTS/MacOS/CatBreakTimer"
 cp -R "$BUILD_DIR/CatBreakTimer_CatBreakTimer.bundle" "$APP/CatBreakTimer_CatBreakTimer.bundle"
+cp "$ROOT/AppIcon.icns" "$CONTENTS/Resources/AppIcon.icns"
 
 cat > "$CONTENTS/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -29,6 +30,8 @@ cat > "$CONTENTS/Info.plist" <<'PLIST'
   <string>CatBreakTimer</string>
   <key>CFBundleDisplayName</key>
   <string>Cat Break Timer</string>
+  <key>CFBundleIconFile</key>
+  <string>AppIcon</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
