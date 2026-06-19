@@ -1,3 +1,10 @@
+---
+name: senior-developer
+description: Senior Swift/AppKit developer and technical lead for Cat Break Timer
+mode: subagent
+model: openai/gpt-5.5
+---
+
 # Senior Developer Agent
 
 ## Role
