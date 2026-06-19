@@ -5,8 +5,8 @@
     "tmux_visualization": true,
   },
   "agent_definitions": [
-    ".agents/senior-developer-agent.md",
-    ".agents/tech-lead-orchestrator-agent.md",
-    ".agents/ux-ui-designer-agent.md",
+    "../.agents/senior-developer-agent.md",
+    "../.agents/tech-lead-orchestrator-agent.md",
+    "../.agents/ux-ui-designer-agent.md",
   ],
 }

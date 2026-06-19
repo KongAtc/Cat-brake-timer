@@ -1,7 +1,7 @@
 ---
 name: ux-ui-designer
 description: UX/UI designer for minimal, cute, clean, friendly Cat Break Timer interfaces
-mode: subagent
+mode: all
 model: openai/gpt-5.5
 ---
 

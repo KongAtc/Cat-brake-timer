@@ -1,7 +1,7 @@
 ---
 name: tech-lead-orchestrator
 description: Technical lead orchestrator for decomposing Cat Break Timer work and coordinating project agents
-mode: subagent
+mode: all
 model: openai/gpt-5.5
 ---
 
